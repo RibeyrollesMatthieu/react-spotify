@@ -6,7 +6,6 @@ export interface I__user {
   readonly email: string;
   readonly profile_url: string;
   readonly followers: number;
-  readonly id: string;
   readonly premium: boolean;
 }
 
@@ -16,7 +15,6 @@ const initialState: I__user = {
   email: '',
   profile_url: '',
   followers: 0,
-  id: '',
   premium: false
 }
 

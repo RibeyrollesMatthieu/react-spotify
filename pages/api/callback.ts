@@ -1,12 +1,9 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { json } from "stream/consumers";
-import Cookies from "universal-cookie";
 const querystring = require('querystring');
 
 const callback = (req: NextApiRequest, res: NextApiResponse) => {
   const code: string | null = req.query.code as string || null;
   const state: string | null = req.query.state as string || null;
-  const cookies = new Cookies(req.headers.cookie);
 
   if (state) {
     /* get the access token */
@@ -23,10 +20,13 @@ const callback = (req: NextApiRequest, res: NextApiResponse) => {
       })
     })
     .then(response => response.json())
-    .then((json) => res.redirect('http://localhost:3000/login?' + querystring.stringify({
-      access_token: json.access_token,
-      refresh_token: json.refresh_token
-    })))
+    .then(json => {
+      process.env.SPOTIFY_ACCESS_TOKEN = json.access_token;
+      process.env.SPOTIFY_REFRESH_TOKEN = json.refresh_token;
+    })
+    .then(() => res.redirect('http://localhost:3000/login'))
+  } else {
+    res.redirect('/');
   }
 
 }
