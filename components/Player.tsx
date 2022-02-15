@@ -9,7 +9,8 @@ const initialTrack: I__track = {
   artists: [{ name: '' }],
   album: {
     images: [{ url: '' }]
-  }
+  },
+  id: ''
 };
 
 export const Player = () => {

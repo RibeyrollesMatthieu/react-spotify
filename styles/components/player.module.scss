@@ -78,18 +78,18 @@
     border: none;
     cursor: pointer;
 
-    &.liked {
-      svg path:nth-of-type(4) { fill: inherit; }
-    }
-
     svg {
-      fill: #B1F241;
-
+      fill: #fff;
       /* target the mouth */
       path:nth-of-type(4) {
         fill: transparent;
         transition: fill .25s;
       }
+    }
+
+    &.liked {
+      svg { fill: #B1F241 };
+      svg path:nth-of-type(4) { fill: inherit; }
     }
   }
 }

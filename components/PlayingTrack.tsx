@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { I__track } from '../redux/features/playerSlice'
 import { getDuration } from '../utils/getDuration';
 import styles from './../styles/components/player.module.scss';
@@ -25,6 +25,14 @@ interface props {
 
 export const PlayingTrack = ({ progress, duration, repeatCallback, repeat, track, togglePlay, previousTrack, nextTrack, isPaused }: props) => {
 
+  const [ liked, setLiked ] = useState<boolean>(false);
+
+  useEffect(() => {
+    fetch(`/api/spotify/is-song-liked?ids=${track.id}`)
+      .then(res => res.json())
+      .then(json => setLiked(json[0]))
+  }, [track.id]);
+
   return (
     <div className={styles.container}>
       <header className={styles.header}>
@@ -47,7 +55,9 @@ export const PlayingTrack = ({ progress, duration, repeatCallback, repeat, track
           </span>
         </div>
 
-        <button className={styles.heart} onClick={(e) => (e.target as HTMLButtonElement).classList.toggle(styles.liked)} >
+        <button 
+          className={ `${styles.heart} ${liked ? styles.liked : ''}` } 
+        >
           <Heart />
         </button>
       </div>

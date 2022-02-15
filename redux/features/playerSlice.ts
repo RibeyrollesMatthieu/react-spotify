@@ -5,7 +5,8 @@ export interface I__track {
   artists: [{ name: string; }];
   album: {
     images: [{ url: string; }]
-  }
+  },
+  id: string;
 }
 export interface I__player {
   track: I__track;
@@ -18,9 +19,10 @@ export const initialState: I__player = {
     artists: [{ name: ''}],
     album: {
       images: [{ url: ''}]
-    }
+    },
+    id: ''
   },
-  playing: false
+  playing: false,
 }
 
 const playerSlice = createSlice({
