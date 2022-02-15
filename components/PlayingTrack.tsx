@@ -21,9 +21,11 @@ interface props {
   repeatCallback: Function;
   duration: number;
   progress: number;
+  shuffle: boolean;
+  shuffleCallback: Function;
 }
 
-export const PlayingTrack = ({ progress, duration, repeatCallback, repeat, track, togglePlay, previousTrack, nextTrack, isPaused }: props) => {
+export const PlayingTrack = ({ shuffleCallback, shuffle, progress, duration, repeatCallback, repeat, track, togglePlay, previousTrack, nextTrack, isPaused }: props) => {
 
   const [ liked, setLiked ] = useState<boolean>(false);
 
@@ -74,7 +76,7 @@ export const PlayingTrack = ({ progress, duration, repeatCallback, repeat, track
       </div>
 
       <div className={styles.actions}>
-        <button ><ShuffleRandom /></button>
+        <button onClick={() => shuffleCallback()} className={ shuffle ? styles.shuffle : ''} ><ShuffleRandom /></button>
         <button onClick={() => previousTrack()}><PreviousNext /></button>
         <button className={styles.play_pause} onClick={() => togglePlay()}>{ isPaused ? <Play /> : <Pause /> }</button>
         <button onClick={() => nextTrack()} className={styles.next} ><PreviousNext /></button>

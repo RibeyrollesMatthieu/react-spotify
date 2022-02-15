@@ -22,6 +22,7 @@ export const Player = () => {
   const [ repeat, setRepeat ] = useState<0 | 1 | 2>(0);
   const [ duration, setDuration ] = useState<number>(0);
   const [ progress, setProgress ] = useState<number>(0);
+  const [ shuffle, setShuffle ] = useState<boolean>(false);
   const progressRef = useRef({});
   const is_pausedRef = useRef({});
 
@@ -36,6 +37,10 @@ export const Player = () => {
 
   const setRepeatTo = (state: 'off' | 'context' | 'track') => {
     fetch(`/api/spotify/player/repeat?state=${state}`)
+  }
+
+  const toggleShuffle = () => {
+    fetch(`/api/spotify/player/shuffle?state=${! shuffle}`);
   }
 
   useEffect(() => {
@@ -74,6 +79,7 @@ export const Player = () => {
         setRepeat(state.repeat_mode);
         setDuration(state.duration);
         setProgress(state.position);
+        setShuffle(state.shuffle);
 
         player.getCurrentState().then( state => { 
             (!state)? setActive(false) : setActive(true) 
@@ -89,7 +95,7 @@ export const Player = () => {
     <>
       <Script src='https://sdk.scdn.co/spotify-player.js' />
 
-      <PlayingTrack progress={progressRef.current as number} duration={duration} repeatCallback={setRepeatTo} repeat={repeat} isPaused={is_paused} track={current_track} nextTrack={() => player?.nextTrack()} previousTrack={() => player?.previousTrack()} togglePlay={() => player?.togglePlay()} />
+      <PlayingTrack shuffleCallback={toggleShuffle} shuffle={shuffle} progress={progressRef.current as number} duration={duration} repeatCallback={setRepeatTo} repeat={repeat} isPaused={is_paused} track={current_track} nextTrack={() => player?.nextTrack()} previousTrack={() => player?.previousTrack()} togglePlay={() => player?.togglePlay()} />
     </>
   )
 }

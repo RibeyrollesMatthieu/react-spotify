@@ -165,6 +165,10 @@
     transform: rotate(180deg);
   }
 
+  .shuffle svg {
+    fill: #B1F241;
+  }
+
   .repeat {
     &_one svg {
       fill: red;
