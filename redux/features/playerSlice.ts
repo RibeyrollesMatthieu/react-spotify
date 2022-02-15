@@ -1,17 +1,24 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-export interface I__player {
-  content: {
-    name: string;
-    artist: string;
+export interface I__track {
+  name: string;
+  artists: [{ name: string; }];
+  album: {
+    images: [{ url: string; }]
   }
+}
+export interface I__player {
+  track: I__track;
   playing: boolean;
 }
 
-const initialState: I__player = {
-  content: {
+export const initialState: I__player = {
+  track: {
     name: '',
-    artist: ''
+    artists: [{ name: ''}],
+    album: {
+      images: [{ url: ''}]
+    }
   },
   playing: false
 }
@@ -21,10 +28,8 @@ const playerSlice = createSlice({
   initialState,
   reducers: {
     setPlayer: (state, action: PayloadAction<I__player>) => state = { ...action.payload },
-    pausePlayer: state => { state.playing = false },
-    resumePlayer: state => { state.playing = true },
   }
 });
 
-export const { setPlayer, pausePlayer, resumePlayer } = playerSlice.actions;
+export const { setPlayer } = playerSlice.actions;
 export default playerSlice.reducer;

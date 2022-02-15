@@ -1,36 +1,53 @@
+import { kStringMaxLength } from 'buffer';
 import Script from 'next/script';
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
+import { I__track } from '../redux/features/playerSlice';
+import { PlayingTrack } from './PlayingTrack';
 
-const track = {
-  name: "",
+const initialTrack: I__track = {
+  name: '',
+  artists: [{ name: '' }],
   album: {
-      images: [
-          { url: "" }
-      ]
-  },
-  artists: [
-      { name: "" }
-  ]
-}
+    images: [{ url: '' }]
+  }
+};
 
 export const Player = () => {
 
   const [ player, setPlayer ] = useState(undefined);
-  const [ is_paused, setPaused ] = useState(false);
-  const [ is_active, setActive ] = useState(false);
-  const [ current_track, setTrack ] = useState(track);
+  const [ is_paused, setPaused ] = useState<boolean>(false);
+  const [ is_active, setActive ] = useState<boolean>(false);
+  const [ current_track, setTrack ] = useState<I__track>(initialTrack);
+  const [ repeat, setRepeat ] = useState<0 | 1 | 2>(0);
+  const [ duration, setDuration ] = useState<number>(0);
+  const [ progress, setProgress ] = useState<number>(0);
+  const progressRef = useRef({});
+  const is_pausedRef = useRef({});
+
+  progressRef.current = progress;
+  is_pausedRef.current = is_paused;
+  
+  useEffect(() => {
+    setInterval(() => {
+      setProgress(is_pausedRef.current ? progressRef.current as number : progressRef.current as number + 1000);
+    }, 1000);
+  }, [])
+
+  const setRepeatTo = (state: 'off' | 'context' | 'track') => {
+    fetch(`/api/spotify/player/repeat?state=${state}`)
+  }
 
   useEffect(() => {
     window.onSpotifyWebPlaybackSDKReady = () => {
 
       const player = new window.Spotify.Player({
-          name: 'Player du bled',
+          name: 'Custom player',
           getOAuthToken: cb => { 
             fetch('/api/spotify/player/oauth-token')
               .then(res => res.json())
               .then(json => cb(json.access_token) )
           },
-          volume: 0.5
+          volume: 1
       });
 
       setPlayer(player);
@@ -47,16 +64,22 @@ export const Player = () => {
 
       player.addListener('player_state_changed', ( state => {
         if (!state) {
-            return;
+          return;
         }
     
+        console.log(state);
         setTrack(state.track_window.current_track);
         setPaused(state.paused);
-    
+        setRepeat(state.repeat_mode);
+        setDuration(state.duration);
+        setProgress(state.position);
+
         player.getCurrentState().then( state => { 
             (!state)? setActive(false) : setActive(true) 
         });
       }));
+
+      // updateProgress();
     };  
   
   }, []);
@@ -65,28 +88,7 @@ export const Player = () => {
     <>
       <Script src='https://sdk.scdn.co/spotify-player.js' />
 
-      <div className="container">
-        <div className="main-wrapper">
-          <img src={current_track.album.images[0].url} className="now-playing__cover" alt="" />
-
-          <div className="now-playing__side">
-            <div className="now-playing__name">{current_track.name}</div>
-            <div className="now-playing__artist">{current_track.artists[0].name}</div>
-          </div>
-
-          <button className="btn-spotify" onClick={() => { player?.previousTrack() }} >
-          &lt;&lt;
-          </button>
-
-          <button className="btn-spotify" onClick={() => { player?.togglePlay() }} >
-          { is_paused ? "PLAY" : "PAUSE" }
-          </button>
-
-          <button className="btn-spotify" onClick={() => { player?.nextTrack() }} >
-          &gt;&gt;
-          </button>
-        </div>
-      </div>
+      <PlayingTrack progress={progressRef.current as number} duration={duration} repeatCallback={setRepeatTo} repeat={repeat} isPaused={is_paused} track={current_track} nextTrack={() => player?.nextTrack()} previousTrack={() => player?.previousTrack()} togglePlay={() => player?.togglePlay()} />
     </>
   )
 }
