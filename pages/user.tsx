@@ -8,7 +8,7 @@ const User = () => {
   const [ fetching, setFetching ] = useState({ loaded: false, error: null });
 
   useEffect(() => {
-    fetch('http://localhost:3000/api/spotify/getCurrentUser')
+    fetch('http://localhost:3000/api/spotify/current-user')
       .then(res => res.json())
       .then(json => {
         const loadedUserData: I__user = {

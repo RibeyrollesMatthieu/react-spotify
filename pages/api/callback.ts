@@ -23,6 +23,7 @@ const callback = (req: NextApiRequest, res: NextApiResponse) => {
     .then(json => {
       process.env.SPOTIFY_ACCESS_TOKEN = json.access_token;
       process.env.SPOTIFY_REFRESH_TOKEN = json.refresh_token;
+      console.log('token', json.access_token)
     })
     .then(() => res.redirect('http://localhost:3000/login'))
   } else {

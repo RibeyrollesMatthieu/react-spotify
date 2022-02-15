@@ -14,7 +14,7 @@ const generateRandomString = (length: number) => {
 
 const login = (req: NextApiRequest, res: NextApiResponse) => {
   const state = generateRandomString(16);
-  const scope = 'user-read-private user-read-email';
+  const scope = 'streaming user-read-email user-modify-playback-state user-read-private';
 
   res.redirect(
     'https://accounts.spotify.com/authorize?' + 
